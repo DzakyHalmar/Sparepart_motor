@@ -1,5 +1,20 @@
 <?php
 
+    session_start();
+
+    // 1. Jika belum login sama sekali, tendang ke login
+    if(!isset($_SESSION['id_user'])){
+        header("Location: ../auth/login.php");
+        exit;
+    }
+
+    // 2. PROTEKSI BARU: Hanya ADMIN yang boleh masuk ke manajemen kategori
+    if($_SESSION['role'] !== 'admin'){
+        // Jika kasir nekat akses lewat URL, lempar balik ke dashboard kasir
+        header("Location: ../dashboard/kasir.php");
+        exit;
+    }
+
     include '../config/koneksi.php';
 
     if(isset($_POST['simpan'])){
@@ -46,13 +61,28 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <div class="dashboard">
 
-        <div class="navbar-admin">
+        <div class="navbar-admin d-flex justify-content-between align-items-center px-4">
 
             <h4>MotoParts Admin</h4>
 
-            <a href="../dashboard/admin.php"
-            class="logout-btn">
-            Kembali
+            <div class="navbar-menu">
+                <a href="../dashboard/kasir.php" class="text-white text-decoration-none me-3">
+                    <i class="fas fa-cash-register me-1"></i> POS Kasir
+                </a>
+                
+                <?php if ($_SESSION['role'] == 'admin') : ?>
+                    <a href="kategori.php" class="text-danger text-decoration-none fw-bold me-3">
+                        <i class="fas fa-tags me-1"></i> Kelola Kategori
+                    </a>
+                <?php endif; ?>
+                
+                <a href="../auth/logout.php" class="text-warning text-decoration-none">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </a>
+            </div>
+
+            <a href="../dashboard/admin.php" class="logout-btn">
+                Kembali
             </a>
 
         </div>
