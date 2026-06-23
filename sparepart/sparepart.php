@@ -3,10 +3,16 @@
 
     include '../config/koneksi.php';
 
+    $kategori = mysqli_query(
+        $koneksi,
+        "SELECT * FROM kategori"
+    );
+
     $pesan = "";
 
     if(isset($_POST['simpan'])){
 
+        $id_kategori = $_POST['id_kategori'];
         $kode = $_POST['kode_sparepart'];
         $nama = $_POST['nama_sparepart'];
         $beli = $_POST['harga_beli'];
@@ -15,17 +21,28 @@
 
         mysqli_query($koneksi,
         "INSERT INTO sparepart
-        (kode_sparepart,nama_sparepart,harga_beli,harga_jual,stok)
+        (id_kategori,kode_sparepart,nama_sparepart,harga_beli,harga_jual,stok)
 
         VALUES
 
-        ('$kode','$nama','$beli','$jual','$stok')");
+        ('$id_kategori','$kode','$nama','$beli','$jual','$stok')");
 
         $pesan = "Data sparepart berhasil ditambahkan!";
     }
 
-    $data = mysqli_query($koneksi,
-    "SELECT * FROM sparepart ORDER BY id_sparepart DESC");
+    $data = mysqli_query(
+        $koneksi,
+        "SELECT
+            sparepart.*,
+            kategori.nama_kategori
+
+        FROM sparepart
+
+        LEFT JOIN kategori
+        ON sparepart.id_kategori = kategori.id_kategori
+
+        ORDER BY id_sparepart DESC"
+    );
 
 ?>
 
@@ -96,6 +113,31 @@
                         </div>
 
                         <div class="mb-3">
+
+                            <label>Kategori</label>
+
+                            <select
+                            name="id_kategori"
+                            class="form-control"
+                            required>
+
+                                <option value="">
+                                    -- Pilih Kategori --
+                                </option>
+
+                                <?php while($k = mysqli_fetch_assoc($kategori)){ ?>
+
+                                    <option value="<?= $k['id_kategori']; ?>">
+                                        <?= $k['nama_kategori']; ?>
+                                    </option>
+
+                                <?php } ?>
+
+                            </select>
+
+                        </div>
+
+                        <div class="mb-3">
                             <label>Harga Beli</label>
                             <input
                                 type="number"
@@ -149,6 +191,7 @@
                                 <th>ID</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
+                                <th>Kategori</th>
                                 <th>Harga Beli</th>
                                 <th>Harga Jual</th>
                                 <th>Stok</th>
@@ -164,6 +207,7 @@
                                 <td><?= $row['id_sparepart']; ?></td>
                                 <td><?= $row['kode_sparepart']; ?></td>
                                 <td><?= $row['nama_sparepart']; ?></td>
+                                <td><?= $row['nama_kategori']; ?></td>
                                 <td>Rp <?= number_format($row['harga_beli']); ?></td>
                                 <td>Rp <?= number_format($row['harga_jual']); ?></td>
                                 <td><?= $row['stok']; ?></td>

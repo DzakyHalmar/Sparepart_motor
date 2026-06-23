@@ -70,9 +70,9 @@
 
                 <!-- user -->
                 <div class="col-md-3">
-                    <a href="user.php" class="menu-card">
-                        <i class="fa-solid fa-users"></i>
-                        <h3>User</h3>
+                    <a href="../kategori/kategori.php" class="menu-card">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <h3>Kategori</h3>
                     </a>
                 </div>
 
