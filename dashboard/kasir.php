@@ -17,21 +17,34 @@ if($_SESSION['role'] != 'kasir'){
 include '../config/koneksi.php'; 
 
 // --- 1. AMBIL DATA SUMMARY SECARA DINAMIS DARI DATABASE ---
-// Hitung jumlah data master suku cadang
+// --- 1. AMBIL DATA SUMMARY SECARA DINAMIS DARI DATABASE ---
+
+// 1. Hitung Total SKU Master Suku Cadang
 $query_sp = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM sparepart");
-$data_sp = mysqli_fetch_assoc($query_sp);
-$total_sparepart = isset($data_sp['total']) ? $data_sp['total'] : 0;
+if ($query_sp) {
+    $data_sp = mysqli_fetch_assoc($query_sp);
+    $total_sparepart = $data_sp['total'];
+} else {
+    $total_sparepart = 0; // Jika tabel belum ada / error, set ke 0
+}
 
-// Hitung total transaksi penjualan yang pernah dilakukan
+// 2. Hitung Nota Penjualan Terbit (Total Transaksi)
 $query_pj = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM penjualan");
-$data_pj = mysqli_fetch_assoc($query_pj);
-$total_transaksi = isset($data_pj['total']) ? $data_pj['total'] : 0;
+if ($query_pj) {
+    $data_pj = mysqli_fetch_assoc($query_pj);
+    $total_transaksi = $data_pj['total'];
+} else {
+    $total_transaksi = 0;
+}
 
-// Hitung jumlah kategori unik langsung dari tabel master kategori
+// 3. Hitung Kelompok Kategori Aktif
 $query_kt = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM kategori");
-$data_kt = mysqli_fetch_assoc($query_kt);
-// Jika tabel kategori masih kosong di database, default ke angka 6 sesuai template visual
-$total_kategori = (isset($data_kt['total']) && $data_kt['total'] > 0) ? $data_kt['total'] : 6;
+if ($query_kt) {
+    $data_kt = mysqli_fetch_assoc($query_kt);
+    $total_kategori = $data_kt['total'];
+} else {
+    $total_kategori = 0;
+}
 
 
 // --- 2. AMBIL DAFTAR BARANG MASTER DENGAN RELASI KATEGORI ---
@@ -156,7 +169,7 @@ if (empty($products)) {
             <div class="navbar-text me-3 text-dark fw-bold small">
                 <i class="bi bi-person-badge text-danger"></i> Login: Kasir Toko
             </div>
-            <a href="auth/logout.php" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+            <a href="../auth/logout.php" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                 <i class="bi bi-box-arrow-right me-1"></i> Log Out
             </a>
         </div>
@@ -177,24 +190,28 @@ if (empty($products)) {
 <section id="dashboard-panel" class="container py-5">
     <h2 class="section-title">Dashboard Analisis Kasir</h2>
     <div class="row g-4">
+        
         <div class="col-md-4">
             <div class="dashboard-card bg-dark shadow-sm">
                 <h1 class="display-4 fw-bold text-warning"><?= $total_sparepart; ?></h1>
                 <p class="text-uppercase tracking-wider mb-0">Total SKU Master Suku Cadang</p>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="dashboard-card bg-red shadow-sm">
                 <h1 class="display-4 fw-bold"><?= $total_transaksi; ?></h1>
                 <p class="text-uppercase tracking-wider mb-0">Nota Penjualan Terbit</p>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="dashboard-card bg-success shadow-sm">
                 <h1 class="display-4 fw-bold"><?= $total_kategori; ?></h1>
                 <p class="text-uppercase tracking-wider mb-0">Kelompok Kategori Aktif</p>
             </div>
         </div>
+
     </div>
 </section>
 
@@ -276,7 +293,7 @@ if (empty($products)) {
 
 <section id="input-transaksi" class="container py-5 bg-white rounded-4 shadow-sm my-5 p-4">
     <h2 class="section-title">Input Penjualan Kasir (POS)</h2>
-    <form action="transaksi/proses_transaksi.php" method="POST">
+    <form action="../transaksi/transaksi.php" method="POST">
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <label class="form-label fw-bold">Tanggal Transaksi</label>
