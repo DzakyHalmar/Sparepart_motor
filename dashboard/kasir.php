@@ -352,10 +352,10 @@ if (empty($products)) {
     <div class="row align-items-center">
         <div class="col-md-4">
             <h3 class="fw-bold text-danger"><i class="bi bi-file-earmark-pdf-fill me-2"></i>Laporan Omset Penjualan</h3>
-            <p class="text-muted mb-md-0">Cetak rekapitulasi nota kasir berdasarkan filter periode untuk diserahkan ke Admin.</p>
+            <p class="text-white-100">Cetak rekapitulasi nota kasir berdasarkan filter periode untuk diserahkan ke Admin.</p>
         </div>
         <div class="col-md-8">
-            <form action="laporan/cetak_laporan.php" method="GET" target="_blank">
+            <form action="../laporan/cetak_laporan.php" method="GET" target="_blank">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label small text-uppercase tracking-wider">Tanggal Mulai</label>
