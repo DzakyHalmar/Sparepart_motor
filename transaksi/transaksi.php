@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stok_sekarang >= $qty) {
             
             // A. Insert ke tabel penjualan
-            $sql_insert = "INSERT INTO penjualan (tanggal, id_user, id_sparepart, qty, total_harga) 
-                           VALUES ('$tanggal', '$id_user', '$id_sparepart', '$qty', '$total_bayar')";
+            $sql_insert = "INSERT INTO penjualan (tanggal, id_user, total, id_sparepart, qty, total_harga)
+               VALUES ('$tanggal', '$id_user', '$total_bayar', '$id_sparepart', '$qty', '$total_bayar')";
             
             if (mysqli_query($koneksi, $sql_insert)) {
                 

@@ -7,10 +7,14 @@ $tgl_akhir = isset($_GET['tgl_akhir']) ? mysqli_real_escape_string($koneksi, $_G
 
 // ==================== REVISI QUERY 1 (TABEL LAPORAN) ====================
 // Menghubungkan penjualan, detail_penjualan, dan sparepart
-$sql = "SELECT p.tanggal, s.nama_sparepart, dp.qty, dp.subtotal 
-        FROM detail_penjualan dp
-        JOIN penjualan p ON dp.id_penjualan = p.id_penjualan
-        JOIN sparepart s ON dp.id_sparepart = s.id_sparepart
+$sql = "SELECT
+            p.tanggal,
+            s.nama_sparepart,
+            p.qty,
+            p.total_harga
+        FROM penjualan p
+        JOIN sparepart s
+            ON p.id_sparepart = s.id_sparepart
         WHERE p.tanggal BETWEEN '$tgl_awal' AND '$tgl_akhir'
         ORDER BY p.tanggal ASC";
 $query = mysqli_query($koneksi, $sql);
@@ -22,7 +26,7 @@ if ($query && mysqli_num_rows($query) > 0) {
     while ($row = mysqli_fetch_assoc($query)) {
         $laporan_data[] = $row;
         // Hitung total omset dari kolom subtotal di detail_penjualan
-        $total_omset += $row['subtotal']; 
+        $total_omset += $row['total_harga']; 
     }
 }
 
