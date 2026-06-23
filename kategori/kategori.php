@@ -89,7 +89,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
         <div class="container py-5">
 
-            <h1 class="dashboard-title">
+            <h1 class="dashboard-title text-center" >
                 Data Kategori
             </h1>
 
@@ -130,7 +130,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
             <div class="d-flex justify-content-center">
 
-                <div class="login-card">
+                <div class="login-card text-center">
 
                     <h3>Daftar Kategori</h3>
 

@@ -11,54 +11,101 @@ $detail_transaksi = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // 2. Tangkap data dari form kasir
-    $tanggal      = mysqli_real_escape_string($koneksi, $_POST['tanggal']);
-    $id_user      = mysqli_real_escape_string($koneksi, $_POST['id_user']);
-    $id_sparepart = mysqli_real_escape_string($koneksi, $_POST['id_sparepart']);
-    $qty          = intval($_POST['qty']);
+    $tanggal = mysqli_real_escape_string($koneksi, $_POST['tanggal']);
+    $id_user = mysqli_real_escape_string($koneksi, $_POST['id_user']);
 
-    // 3. Ambil data produk untuk cek stok & hitung harga
-    $query_sp = mysqli_query($koneksi, "SELECT * FROM sparepart WHERE id_sparepart = '$id_sparepart'");
-    $sparepart = mysqli_fetch_assoc($query_sp);
+    $id_sparepart = $_POST['id_sparepart'];
+    $qty = $_POST['qty'];
 
-    if ($sparepart) {
-        $nama_barang = $sparepart['nama_sparepart'];
-        $harga_jual  = $sparepart['harga_jual'];
-        $stok_sekarang = $sparepart['stok'];
-        $total_bayar = $harga_jual * $qty;
+    $grand_total = 0;
+    $detail_barang = [];
 
-        // Validasi kecukupan stok gudang
-        if ($stok_sekarang >= $qty) {
-            
-            // A. Insert ke tabel penjualan
-            $sql_insert = "INSERT INTO penjualan (tanggal, id_user, total, id_sparepart, qty, total_harga)
-               VALUES ('$tanggal', '$id_user', '$total_bayar', '$id_sparepart', '$qty', '$total_bayar')";
-            
-            if (mysqli_query($koneksi, $sql_insert)) {
-                
-                // B. Potong stok sparepart
-                $stok_baru = $stok_sekarang - $qty;
-                mysqli_query($koneksi, "UPDATE sparepart SET stok = '$stok_baru' WHERE id_sparepart = '$id_sparepart'");
+    for ($i = 0; $i < count($id_sparepart); $i++) {
 
-                // Set flag sukses & simpan detail buat tampilin struk belanjaan
-                $sukses = true;
-                $detail_transaksi = [
-                    'nota' => 'INV-' . time(),
-                    'tanggal' => $tanggal,
-                    'barang' => $nama_barang,
-                    'harga' => $harga_jual,
-                    'qty' => $qty,
-                    'total' => $total_bayar
-                ];
+        $idBarang = $id_sparepart[$i];
+        $jumlah = intval($qty[$i]);
 
-            } else {
-                $error_msg = "Gagal menyimpan ke database: " . mysqli_error($koneksi);
-            }
-        } else {
-            $error_msg = "Stok Gudang Tidak Cukup! Sisa stok saat ini hanya " . $stok_sekarang . " pcs.";
+        if($jumlah <= 0){
+            continue;
         }
-    } else {
-        $error_msg = "Data Suku Cadang Tidak Ditemukan di Database Master!";
+
+        $query_sp = mysqli_query(
+            $koneksi,
+            "SELECT * FROM sparepart WHERE id_sparepart='$idBarang'"
+        );
+
+        $sparepart = mysqli_fetch_assoc($query_sp);
+
+        if (!$sparepart) {
+            continue;
+        }
+
+        if ($jumlah > $sparepart['stok']) {
+            $error_msg = "Stok ".$sparepart['nama_sparepart']." tidak mencukupi.";
+            break;
+        }
+
+        $subtotal =
+            $sparepart['harga_jual']
+            *
+            $jumlah;
+
+        $grand_total += $subtotal;
+
+        $detail_barang[] = [
+            'id_sparepart' => $idBarang,
+            'nama'         => $sparepart['nama_sparepart'],
+            'harga'        => $sparepart['harga_jual'],
+            'qty'          => $jumlah,
+            'subtotal'     => $subtotal,
+            'stok'         => $sparepart['stok']
+        ];
+    }
+    if(empty($error_msg)){
+
+        foreach($detail_barang as $item){
+
+            mysqli_query(
+                $koneksi,
+
+                "INSERT INTO penjualan
+                (
+                    tanggal,
+                    id_user,
+                    total,
+                    id_sparepart,
+                    qty,
+                    total_harga
+                )
+
+                VALUES
+                (
+                    '$tanggal',
+                    '$id_user',
+                    '".$item['subtotal']."',
+                    '".$item['id_sparepart']."',
+                    '".$item['qty']."',
+                    '".$item['subtotal']."'
+                )"
+            );
+
+            mysqli_query(
+                $koneksi,
+
+                "UPDATE sparepart
+                SET stok = stok - ".$item['qty']."
+                WHERE id_sparepart='".$item['id_sparepart']."'"
+            );
+        }
+
+        $sukses = true;
+
+        $detail_transaksi = [
+            'nota'    => 'INV-' . time(),
+            'tanggal' => $tanggal,
+            'items'   => $detail_barang,
+            'total'   => $grand_total
+        ];
     }
 } else {
     // Kalau diakses langsung tanpa klik tombol simpan, usir balik ke kasir
@@ -108,13 +155,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="line-dashed"></div>
                 
                 <div class="mb-2 small text-uppercase tracking-wider text-muted fw-bold">Detail Item:</div>
-                <div class="d-flex justify-content-between align-items-start">
-                    <div style="max-width: 70%;">
-                        <h6 class="fw-bold mb-0"><?= $detail_transaksi['barang']; ?></h6>
-                        <small class="text-muted">Rp <?= number_format($detail_transaksi['harga'], 0, ',', '.'); ?> x <?= $detail_transaksi['qty']; ?></small>
+                <?php foreach($detail_transaksi['items'] as $item): ?>
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+
+                    <div style="max-width:70%;">
+                        <h6 class="fw-bold mb-0">
+                            <?= $item['nama']; ?>
+                        </h6>
+
+                        <small class="text-muted">
+                            Rp <?= number_format($item['harga'],0,',','.'); ?>
+                            x <?= $item['qty']; ?>
+                        </small>
                     </div>
-                    <span class="fw-bold">Rp <?= number_format($detail_transaksi['total'], 0, ',', '.'); ?></span>
+
+                    <span class="fw-bold">
+                        Rp <?= number_format($item['subtotal'],0,',','.'); ?>
+                    </span>
+
                 </div>
+
+                <?php endforeach; ?>
                 
                 <div class="line-dashed"></div>
                 
@@ -124,7 +186,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 
                 <div class="alert alert-secondary small text-center mb-4 py-2">
-                    <i class="bi bi-info-circle me-1"></i> Stok di database gudang otomatis terpotong **<?= $detail_transaksi['qty']; ?> pcs**.
+                    <i class="bi bi-info-circle me-1"></i>
+                    Semua stok barang berhasil diperbarui secara otomatis.
                 </div>
 
                 <div class="text-center">

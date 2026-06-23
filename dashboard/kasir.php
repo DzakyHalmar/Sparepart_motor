@@ -17,7 +17,6 @@ if($_SESSION['role'] != 'kasir'){
 include '../config/koneksi.php'; 
 
 // --- 1. AMBIL DATA SUMMARY SECARA DINAMIS DARI DATABASE ---
-// --- 1. AMBIL DATA SUMMARY SECARA DINAMIS DARI DATABASE ---
 
 // 1. Hitung Total SKU Master Suku Cadang
 $query_sp = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM sparepart");
@@ -77,6 +76,9 @@ if (empty($products)) {
     ];
 }
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -215,6 +217,13 @@ if (empty($products)) {
     </div>
 </section>
 
+<?php
+    $queryKategori = mysqli_query(
+        $koneksi,
+        "SELECT * FROM kategori ORDER BY nama_kategori ASC"
+    );
+?>
+
 <section class="container py-4">
     <h2 class="section-title">Kategori Suku Cadang</h2>
     <div class="row g-4 justify-content-center">
@@ -226,9 +235,8 @@ if (empty($products)) {
             </a>
         </div>
 
-        <?php 
-        $categories = ['Mesin', 'Sistem Rem', 'Oli & Pelumas', 'Ban & Velg', 'Kelistrikan / Lampu', 'Aksesoris'];
-        foreach($categories as $cat): 
+        <?php while($kat = mysqli_fetch_assoc($queryKategori)): 
+            $cat = $kat['nama_kategori'];
             $is_active = ($filter_kategori == $cat) ? 'bg-danger text-white' : '';
         ?>
         <div class="col-md-2 col-6">
@@ -238,7 +246,7 @@ if (empty($products)) {
                 </div>
             </a>
         </div>
-        <?php endforeach; ?>
+        <?php endwhile; ?>
     </div>
 </section>
 
@@ -310,17 +318,18 @@ if (empty($products)) {
         </div>
         
         <div class="table-responsive">
-            <table class="table table-bordered align-middle">
+            <table class="table table-bordered align-middle" id="tabelBarang">
                 <thead class="table-dark">
                     <tr>
                         <th>Pilih Suku Cadang (Database Master)</th>
-                        <th style="width: 180px;">Jumlah Beli (`qty`)</th>
+                        <th style="width: 180px;">Qty</th>
+                        <th style="width: 120px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <select class="form-select" name="id_sparepart" required>
+                            <select class="form-select" name="id_sparepart[]" required>
                                 <option value="">-- Pilih Item Suku Cadang --</option>
                                 <?php foreach($products as $p): ?>
                                     <?php 
@@ -336,11 +345,28 @@ if (empty($products)) {
                             </select>
                         </td>
                         <td>
-                            <input type="number" class="form-control" name="qty" min="1" value="1" required>
+                            <input type="number" class="form-control" name="qty[]" min="1" value="1" required>
                         </td>
+                        <td>
+                        <button type="button"
+                                class="btn btn-danger"
+                                onclick="hapusBaris(this)">
+                            Hapus
+                        </button>
+                    </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="mb-3">
+            <button
+                type="button"
+                class="btn btn-success"
+                onclick="tambahBaris()">
+
+                + Tambah Barang
+
+            </button>
         </div>
         <div class="text-end mt-3">
             <button type="submit" class="btn btn-red px-5 fw-bold"><i class="bi bi-cart-check me-2"></i>Simpan & Kurangi Stok</button>
@@ -441,5 +467,71 @@ if (empty($products)) {
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+function tambahBaris(){
+
+    let html = `
+    <tr>
+
+        <td>
+            <select
+                class="form-select"
+                name="id_sparepart[]"
+                required>
+
+                <option value="">
+                    -- Pilih Item --
+                </option>
+
+                <?php foreach($products as $p): ?>
+
+                <option value="<?= $p['id_sparepart']; ?>">
+
+                    <?= $p['nama_sparepart']; ?>
+                    (Rp <?= number_format($p['harga_jual'],0,',','.'); ?>)
+                    - (Sisa <?= $p['stok']; ?>)
+
+                </option>
+
+                <?php endforeach; ?>
+
+            </select>
+        </td>
+
+        <td>
+            <input
+                type="number"
+                class="form-control"
+                name="qty[]"
+                value="1"
+                min="1">
+        </td>
+
+        <td>
+            <button
+                type="button"
+                class="btn btn-danger"
+                onclick="hapusBaris(this)">
+
+                Hapus
+
+            </button>
+        </td>
+
+    </tr>
+    `;
+
+    document
+        .getElementById("tabelBarang")
+        .querySelector("tbody")
+        .insertAdjacentHTML("beforeend", html);
+}
+
+function hapusBaris(btn){
+    btn.closest("tr").remove();
+}
+
+</script>
 </body>
 </html>

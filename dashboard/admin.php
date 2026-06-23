@@ -78,7 +78,7 @@
 
                 <!-- transaksi -->
                 <div class="col-md-3">
-                    <<a href="../laporan/cetak_laporan.php" class="menu-card">
+                    <a href="../laporan/cetak_laporan.php" class="menu-card">
                         <i class="fa-solid fa-file-invoice-dollar"></i>
                         <h3>Transaksi</h3>
                     </a>
