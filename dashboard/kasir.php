@@ -316,6 +316,24 @@ if (empty($products)) {
                 <input type="text" class="form-control bg-light" value="Bayar Di Tempat (Cash)" readonly>
             </div>
         </div>
+        <div class="row mb-4">
+
+            <div class="col-md-12">
+
+                <label class="form-label fw-bold text-center d-block" >
+                    Nama Pembeli
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control text-center"
+                    name="nama_pembeli"
+                    placeholder="Masukkan nama pembeli..."
+                    required>
+
+            </div>
+
+        </div>
         
         <div class="table-responsive">
             <table class="table table-bordered align-middle" id="tabelBarang">

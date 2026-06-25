@@ -5,6 +5,7 @@ $user = "root";
 $pass = "";
 $db   = "db_sparepart_motor";
 
+
 $koneksi = mysqli_connect($host, $user, $pass, $db);
 
 if (!$koneksi) {

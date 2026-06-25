@@ -10,11 +10,13 @@ $tgl_akhir = isset($_GET['tgl_akhir']) ? mysqli_real_escape_string($koneksi, $_G
 $sql = "SELECT
             p.tanggal,
             s.nama_sparepart,
-            p.qty,
-            p.total_harga
+            d.qty,
+            d.subtotal
         FROM penjualan p
+        JOIN detail_penjualan d
+            ON p.id_penjualan = d.id_penjualan
         JOIN sparepart s
-            ON p.id_sparepart = s.id_sparepart
+            ON d.id_sparepart = s.id_sparepart
         WHERE p.tanggal BETWEEN '$tgl_awal' AND '$tgl_akhir'
         ORDER BY p.tanggal ASC";
 $query = mysqli_query($koneksi, $sql);
@@ -26,17 +28,31 @@ if ($query && mysqli_num_rows($query) > 0) {
     while ($row = mysqli_fetch_assoc($query)) {
         $laporan_data[] = $row;
         // Hitung total omset dari kolom subtotal di detail_penjualan
-        $total_omset += $row['total_harga']; 
+        $total_omset += $row['subtotal']; 
     }
 }
 
+$qNota = mysqli_query(
+    $koneksi,
+    "SELECT COUNT(*) AS jumlah
+     FROM penjualan
+     WHERE tanggal BETWEEN '$tgl_awal' AND '$tgl_akhir'"
+);
+
+$jumlahNota = mysqli_fetch_assoc($qNota)['jumlah'];
+
+
 // ==================== REVISI QUERY 2 (GRAFIK CHART) ====================
 // Mengambil total pendapatan harian dari tabel penjualan
-$sql_chart = "SELECT tanggal, SUM(total_harga) as total_harian 
-              FROM penjualan 
-              WHERE tanggal BETWEEN '$tgl_awal' AND '$tgl_akhir'
-              GROUP BY tanggal 
-              ORDER BY tanggal ASC";
+$sql_chart = "SELECT
+                p.tanggal,
+                SUM(d.subtotal) AS total_harian
+            FROM penjualan p
+            JOIN detail_penjualan d
+                ON p.id_penjualan = d.id_penjualan
+            WHERE p.tanggal BETWEEN '$tgl_awal' AND '$tgl_akhir'
+            GROUP BY p.tanggal
+            ORDER BY p.tanggal";
 $query_chart = mysqli_query($koneksi, $sql_chart);
 
 $chart_labels = [];
@@ -109,10 +125,10 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
                 <div class="row align-items-center">
                     <div class="col-7">
                         <h6 class="text-white-100 small">Total Omset Pendapatan</h6>
-                        <h2 class="fw-bold text-warning mb-0">Rp <?= number_format($total_omset, 0, ',', '.'); ?></h2>
+                        <h2 class="fw-bold text-warning mb-0">Rp <?= number_format($total_omset,0,',','.'); ?></h2>
                     </div>
                     <div class="col-5 text-end">
-                        <span class="badge bg-danger fs-6 rounded-pill"><?= count($laporan_data); ?> Nota Terbit</span>
+                        <span class="badge bg-danger fs-6 rounded-pill"><?= $jumlahNota; ?> Nota Terbit</span>
                     </div>
                 </div>
             </div>
@@ -136,7 +152,7 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
                                     <td><?= date('d/m/Y', strtotime($data['tanggal'])); ?></td>
                                     <td class="fw-bold"><?= $data['nama_sparepart']; ?></td>
                                     <td class="text-center"><?= $data['qty']; ?> pcs</td>
-                                    <td class="text-end fw-bold text-danger">Rp <?= number_format($data['total_harga'], 0, ',', '.'); ?></td>
+                                    <td class="text-end fw-bold text-danger">Rp <?= number_format($data['subtotal'], 0, ',', '.'); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>

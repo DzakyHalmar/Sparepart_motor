@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $tanggal = mysqli_real_escape_string($koneksi, $_POST['tanggal']);
     $id_user = mysqli_real_escape_string($koneksi, $_POST['id_user']);
+    $nama_pembeli = mysqli_real_escape_string($koneksi, $_POST['nama_pembeli']);
 
     $id_sparepart = $_POST['id_sparepart'];
     $qty = $_POST['qty'];
@@ -63,35 +64,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     if(empty($error_msg)){
 
+            mysqli_query(
+            $koneksi,
+            "INSERT INTO penjualan
+            (
+                tanggal,
+                id_user,
+                nama_pembeli,
+                total
+            )
+            VALUES
+            (
+                '$tanggal',
+                '$id_user',
+                '$nama_pembeli',
+                '$grand_total'
+            )"
+        );
+
+        // Ambil ID transaksi yang baru dibuat
+        $id_penjualan = mysqli_insert_id($koneksi);
+
+        // Simpan semua barang ke tabel detail_penjualan
         foreach($detail_barang as $item){
 
             mysqli_query(
                 $koneksi,
-
-                "INSERT INTO penjualan
+                "INSERT INTO detail_penjualan
                 (
-                    tanggal,
-                    id_user,
-                    total,
+                    id_penjualan,
                     id_sparepart,
                     qty,
-                    total_harga
+                    harga,
+                    subtotal
                 )
-
                 VALUES
                 (
-                    '$tanggal',
-                    '$id_user',
-                    '".$item['subtotal']."',
+                    '$id_penjualan',
                     '".$item['id_sparepart']."',
                     '".$item['qty']."',
+                    '".$item['harga']."',
                     '".$item['subtotal']."'
                 )"
             );
 
+            // Kurangi stok
             mysqli_query(
                 $koneksi,
-
                 "UPDATE sparepart
                 SET stok = stok - ".$item['qty']."
                 WHERE id_sparepart='".$item['id_sparepart']."'"
@@ -150,6 +169,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="d-flex justify-content-between small text-muted">
                     <span>No. Nota: <?= $detail_transaksi['nota']; ?></span>
                     <span><?= date('d M Y', strtotime($detail_transaksi['tanggal'])); ?></span>
+                </div>
+
+                <div class="mt-2 mb-3">
+                    <strong>Nama Pembeli :</strong>
+                    <?= htmlspecialchars($nama_pembeli); ?>
                 </div>
                 
                 <div class="line-dashed"></div>
