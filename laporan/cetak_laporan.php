@@ -75,18 +75,48 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .report-header { background: #111; color: white; padding: 30px; border-radius: 0 0 20px 20px; }
-        .brand span { color: red; font-weight: bold; }
-        .card-custom { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .btn-red { background: red; color: white; border-radius: 30px; padding: 8px 25px; border: none; font-weight: bold;}
-        .btn-red:hover { background: #cc0000; color: white; }
+        body { 
+            background: #f8f9fa; 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+        .report-header { 
+            background: #111; 
+            color: white; 
+            padding: 30px; 
+            border-radius: 0 0 20px 20px; 
+        }
+        .brand span { 
+            color: red; 
+            font-weight: bold; 
+        }
+        .card-custom { 
+            border: none; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+        .btn-red { 
+            background: red; 
+            color: white; 
+            border-radius: 30px; 
+            padding: 8px 25px; 
+            border: none; 
+            font-weight: bold;
+        }
+        .btn-red:hover { 
+            background: #cc0000; 
+            color: white; }
         
         /* CSS Khusus Cetak / Print PDF */
         @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            .card-custom { box-shadow: none; border: 1px solid #ccc; }
+            .no-print { 
+                display: none !important; 
+            }
+            body { 
+                background: white; 
+            }
+            .card-custom { 
+                box-shadow: none; border: 1px solid #ccc; 
+            }
         }
     </style>
 </head>
@@ -100,7 +130,11 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
             <small class="text-danger fw-bold">Periode: <?= date('d M Y', strtotime($tgl_awal)); ?> s/d <?= date('d M Y', strtotime($tgl_akhir)); ?></small>
         </div>
         <div class="no-print">
-            <button onclick="window.print()" class="btn btn-red me-2"><i class="bi bi-file-earmark-pdf me-2"></i>Cetak ke PDF / Print</button>
+
+            <!-- button cetak pdf (merah) -->
+            <button onclick="window.print()" class="btn btn-red me-2">
+                <i class="bi bi-file-earmark-pdf me-2"></i>Cetak ke PDF / Print
+            </button>
             <a href="../dashboard/kasir.php" class="btn btn-outline-light rounded-pill"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
         </div>
     </div>
@@ -109,6 +143,8 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
 <div class="container py-3">
     <div class="row g-4">
         <div class="col-lg-5">
+
+            <!-- card pendapatan -->
             <div class="card card-custom bg-white p-4 h-100">
                 <h5 class="fw-bold text-dark mb-3"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Tren Pendapatan Harian</h5>
                 <hr>
@@ -133,6 +169,7 @@ if ($query_chart && mysqli_num_rows($query_chart) > 0) {
                 </div>
             </div>
 
+            <!-- bagian rincian riwayat transaksi -->
             <div class="card card-custom bg-white p-4">
                 <h5 class="fw-bold text-dark mb-3"><i class="bi bi-list-ul text-danger me-2"></i>Rincian Riwayat Transaksi</h5>
                 <div class="table-responsive">

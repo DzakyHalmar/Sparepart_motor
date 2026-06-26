@@ -41,34 +41,34 @@ $data = mysqli_query(
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="dashboard">
 
+        <!-- navbar -->
         <div class="navbar-admin">
-
             <h4>MotoParts Admin</h4>
 
+            <!-- button logout -->
             <a href="../dashboard/admin.php"
             class="logout-btn">
                 Kembali
             </a>
-
         </div>
-
         <div class="container py-5">
-
             <h1 class="dashboard-title text-center">
                 Data Supplier
             </h1>
 
+            <!-- card tambah supplier (pake css card login) -->
             <div class="d-flex justify-content-center mb-4">
-
                 <div class="login-card text-center">
-
                     <h3>Tambah Supplier</h3>
 
+                    <!-- form pengisian supplier -->
                     <form method="POST">
 
+                        <!-- nama supplier -->
                         <div class="mb-3">
                             <label>Nama Supplier</label>
                             <input
@@ -78,6 +78,7 @@ $data = mysqli_query(
                             required>
                         </div>
 
+                        <!-- alamat supplier -->
                         <div class="mb-3">
                             <label>Alamat</label>
                             <textarea
@@ -86,6 +87,7 @@ $data = mysqli_query(
                             required></textarea>
                         </div>
 
+                        <!-- telepon supplier -->
                         <div class="mb-3">
                             <label>Telepon</label>
                             <input
@@ -95,29 +97,23 @@ $data = mysqli_query(
                             required>
                         </div>
 
+                        <!-- button simpan -->
                         <button
                         type="submit"
                         name="simpan"
                         class="btn btn-login">
                             Simpan
                         </button>
-
                     </form>
-
                 </div>
-
             </div>
-
             <div class="d-flex justify-content-center">
 
+                <!-- card daftar supplier (pake css daftar sparepart) -->
                 <div class="daftar-sparepart-card text-center">
-
                     <h3>Daftar Supplier</h3>
-
                     <table class="table table-dark table-hover">
-
                         <thead>
-
                             <tr>
                                 <th>ID</th>
                                 <th>Nama Supplier</th>
@@ -125,52 +121,36 @@ $data = mysqli_query(
                                 <th>Telepon</th>
                                 <th>Aksi</th>
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                         <?php while($row = mysqli_fetch_assoc($data)){ ?>
-
                             <tr>
-
                                 <td><?= $row['id_supplier']; ?></td>
-
                                 <td><?= $row['nama_supplier']; ?></td>
-
                                 <td><?= $row['alamat']; ?></td>
-
                                 <td><?= $row['telepon']; ?></td>
-
                                 <td>
 
+                                    <!-- button edit -->
                                     <a href="edit_supplier.php?id=<?= $row['id_supplier']; ?>"
                                     class="btn btn-warning btn-sm">
                                     Edit
                                     </a>
 
+                                    <!-- button hapus -->
                                     <a href="hapus_supplier.php?id=<?= $row['id_supplier']; ?>"
                                     class="btn btn-danger btn-sm"
                                     onclick="return confirm('Yakin ingin menghapus supplier ini?')">
                                     Hapus
                                     </a>
-
                                 </td>
-
                             </tr>
-
                         <?php } ?>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 </body>
 </html>

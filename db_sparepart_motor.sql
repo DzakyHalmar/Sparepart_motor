@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 11, 2026 at 09:16 AM
+-- Generation Time: Jun 23, 2026 at 07:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,6 +54,29 @@ CREATE TABLE `detail_penjualan` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `kategori`
+--
+
+CREATE TABLE `kategori` (
+  `id_kategori` int(11) NOT NULL,
+  `nama_kategori` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `kategori`
+--
+
+INSERT INTO `kategori` (`id_kategori`, `nama_kategori`) VALUES
+(1, 'Mesin'),
+(2, 'Sistem Rem'),
+(3, 'Oli & Pelumas'),
+(4, 'Ban & Velg'),
+(5, 'Kelistrikan / Lampu'),
+(6, 'Aksesoris');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pembelian`
 --
 
@@ -75,8 +98,19 @@ CREATE TABLE `penjualan` (
   `id_penjualan` int(11) NOT NULL,
   `tanggal` date NOT NULL,
   `id_user` int(11) NOT NULL,
-  `total` int(11) NOT NULL
+  `total` int(11) NOT NULL,
+  `id_sparepart` int(11) NOT NULL,
+  `qty` int(11) NOT NULL,
+  `total_harga` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `penjualan`
+--
+
+INSERT INTO `penjualan` (`id_penjualan`, `tanggal`, `id_user`, `total`, `id_sparepart`, `qty`, `total_harga`) VALUES
+(1, '2026-06-23', 2, 150000, 1, 1, 150000.00),
+(2, '2026-06-23', 2, 7200000, 1, 48, 7200000.00);
 
 -- --------------------------------------------------------
 
@@ -86,12 +120,20 @@ CREATE TABLE `penjualan` (
 
 CREATE TABLE `sparepart` (
   `id_sparepart` int(11) NOT NULL,
+  `id_kategori` int(11) DEFAULT NULL,
   `kode_sparepart` varchar(20) NOT NULL,
   `nama_sparepart` varchar(100) NOT NULL,
   `harga_beli` int(11) NOT NULL,
   `harga_jual` int(11) NOT NULL,
   `stok` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sparepart`
+--
+
+INSERT INTO `sparepart` (`id_sparepart`, `id_kategori`, `kode_sparepart`, `nama_sparepart`, `harga_beli`, `harga_jual`, `stok`) VALUES
+(1, 4, '01', 'ban', 120000, 150000, 1);
 
 -- --------------------------------------------------------
 
@@ -149,6 +191,12 @@ ALTER TABLE `detail_penjualan`
   ADD KEY `id_penjualan` (`id_penjualan`);
 
 --
+-- Indexes for table `kategori`
+--
+ALTER TABLE `kategori`
+  ADD PRIMARY KEY (`id_kategori`);
+
+--
 -- Indexes for table `pembelian`
 --
 ALTER TABLE `pembelian`
@@ -167,7 +215,8 @@ ALTER TABLE `penjualan`
 -- Indexes for table `sparepart`
 --
 ALTER TABLE `sparepart`
-  ADD PRIMARY KEY (`id_sparepart`);
+  ADD PRIMARY KEY (`id_sparepart`),
+  ADD KEY `fk_sparepart_kategori` (`id_kategori`);
 
 --
 -- Indexes for table `supplier`
@@ -198,6 +247,12 @@ ALTER TABLE `detail_penjualan`
   MODIFY `id_detail_penjualan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `kategori`
+--
+ALTER TABLE `kategori`
+  MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `pembelian`
 --
 ALTER TABLE `pembelian`
@@ -207,13 +262,13 @@ ALTER TABLE `pembelian`
 -- AUTO_INCREMENT for table `penjualan`
 --
 ALTER TABLE `penjualan`
-  MODIFY `id_penjualan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_penjualan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `sparepart`
 --
 ALTER TABLE `sparepart`
-  MODIFY `id_sparepart` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_sparepart` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `supplier`
@@ -257,6 +312,12 @@ ALTER TABLE `pembelian`
 --
 ALTER TABLE `penjualan`
   ADD CONSTRAINT `penjualan_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`);
+
+--
+-- Constraints for table `sparepart`
+--
+ALTER TABLE `sparepart`
+  ADD CONSTRAINT `fk_sparepart_kategori` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

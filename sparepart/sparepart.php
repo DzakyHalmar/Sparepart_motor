@@ -61,21 +61,16 @@
 
 <body>
     <div class="dashboard">
-
         <div class="navbar-admin">
             <h4>MotoParts Admin</h4>
-
             <a href="../dashboard/admin.php" class="logout-btn">
                 Kembali
             </a>
         </div>
-
         <div class="container py-5">
-
             <h1 class="dashboard-title text-center">
                 Data Sparepart
             </h1>
-
             <?php 
                 if($pesan != ""){ 
                     ?>
@@ -85,15 +80,11 @@
                     <?php } 
             ?>
 
-            <!-- CARD TAMBAH SPAREPART -->
+            <!-- CARD TAMBAH SPAREPART pake css login card -->
             <div class="d-flex justify-content-center">
-
                 <div class="login-card mb-4 text-center">
-
                     <h3>Tambah Sparepart</h3>
-
                     <form method="POST">
-
                         <div class="mb-3">
                             <label>Kode Sparepart</label>
                             <input
@@ -113,28 +104,20 @@
                         </div>
 
                         <div class="mb-3">
-
                             <label>Kategori</label>
-
                             <select
                             name="id_kategori"
                             class="form-control"
                             required>
-
                                 <option value="">
                                     -- Pilih Kategori --
                                 </option>
-
                                 <?php while($k = mysqli_fetch_assoc($kategori)){ ?>
-
                                     <option value="<?= $k['id_kategori']; ?>">
                                         <?= $k['nama_kategori']; ?>
                                     </option>
-
                                 <?php } ?>
-
                             </select>
-
                         </div>
 
                         <div class="mb-3">
@@ -170,22 +153,15 @@
                             class="btn btn-login">
                             Simpan
                         </button>
-
                     </form>
-
                 </div>
-
             </div>
 
-            <!-- CARD DAFTAR SPAREPART -->
+            <!-- CARD DAFTAR SPAREPART pake css daftar sparepart card-->
             <div class="d-flex justify-content-center">
-
                 <div class="daftar-sparepart-card  text-center">
-
                     <h3>Daftar Sparepart</h3>
-
                     <table class="table table-dark table-hover">
-
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -198,11 +174,8 @@
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-
                         <tbody>
-
                         <?php while($row = mysqli_fetch_assoc($data)){ ?>
-
                             <tr>
                                 <td><?= $row['id_sparepart']; ?></td>
                                 <td><?= $row['kode_sparepart']; ?></td>
@@ -211,7 +184,6 @@
                                 <td>Rp <?= number_format($row['harga_beli']); ?></td>
                                 <td>Rp <?= number_format($row['harga_jual']); ?></td>
                                 <td><?= $row['stok']; ?></td>
-
                                 <td>
                                     <!-- button edit -->
                                     <a href="edit_sparepart.php?id=<?= $row['id_sparepart']; ?>"
@@ -227,17 +199,11 @@
                                     </a>
                                 </td>
                             </tr>
-
                         <?php } ?>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
     </div>
 </body>

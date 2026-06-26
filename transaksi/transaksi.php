@@ -141,15 +141,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { background: #f5f5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .receipt-card { max-width: 500px; margin: 60px auto; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-        .receipt-header { background: #111; color: white; padding: 30px; text-align: center; position: relative; }
-        .receipt-header .brand { font-size: 28px; font-weight: bold; }
-        .receipt-header .brand span { color: red; }
-        .receipt-body { background: white; padding: 30px; }
-        .line-dashed { border-top: 2px dashed #ddd; margin: 20px 0; }
-        .btn-red { background: red; color: white; border-radius: 30px; padding: 10px 25px; font-weight: bold; transition: 0.2s; border: none;}
-        .btn-red:hover { background: #cc0000; color: white; }
+        body { 
+            background: #f5f5f5; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        .receipt-card { 
+            max-width: 500px; 
+            margin: 60px auto; 
+            border: none; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+        }
+        .receipt-header { 
+            background: #111; 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+            position: relative; 
+        }
+        .receipt-header .brand { 
+            font-size: 28px; 
+            font-weight: bold; 
+        }
+        .receipt-header .brand span { 
+            color: red; 
+        }
+        .receipt-body { 
+            background: white; 
+            padding: 30px; 
+        }
+        .line-dashed { 
+            border-top: 2px dashed #ddd; 
+            margin: 20px 0; 
+        }
+        .btn-red { 
+            background: red; 
+            color: white; 
+            border-radius: 30px; 
+            padding: 10px 25px; 
+            font-weight: bold; 
+            transition: 0.2s; 
+            border: none;
+        }
+        .btn-red:hover { 
+            background: #cc0000; 
+            color: white; 
+        }
     </style>
 </head>
 <body>
